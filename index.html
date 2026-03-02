@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>VSH SERVICE - Экосистема</title>
+    <title>VSH SERVICE</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
             --neon-blue: #00f2ff;
             --main-bg: #0f172a;
-            --glass-bg: rgba(15, 23, 42, 0.9);
+            --glass-bg: rgba(15, 23, 42, 0.95);
             --text-color: #f8fafc;
             --accent-red: #ff4757;
         }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background: var(--main-bg);
@@ -21,55 +20,47 @@
             margin: 0; padding: 0; min-height: 100vh;
             overflow-x: hidden;
         }
-
         .container { padding: 20px; max-width: 500px; margin: 0 auto; animation: fadeIn 0.3s ease; }
         .hidden { display: none !important; }
-        
         .card {
             background: var(--glass-bg);
             backdrop-filter: blur(15px);
             border: 1px solid rgba(0, 242, 255, 0.2);
             border-radius: 20px; padding: 20px; margin-bottom: 20px;
         }
-
         h1, h2 { color: var(--neon-blue); text-transform: uppercase; letter-spacing: 1px; margin: 0 0 15px 0; }
-        
         .btn {
             display: flex; align-items: center; justify-content: center;
             background: linear-gradient(135deg, #2481cc, #00d4ff);
             color: #fff; border: none; padding: 16px; margin: 12px 0;
             border-radius: 14px; width: 100%; font-weight: bold; font-size: 16px;
-            cursor: pointer; transition: 0.2s;
+            cursor: pointer; transition: 0.2s; text-decoration: none;
         }
         .btn:disabled { background: #475569 !important; opacity: 0.6; cursor: not-allowed; }
         .btn-outline { background: transparent; border: 2px solid var(--neon-blue); color: var(--neon-blue); }
-
         .input {
             width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             background: rgba(15, 23, 42, 0.6); color: #fff; font-size: 16px; box-sizing: border-box;
         }
-
         .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .cat-item {
             padding: 15px; border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 12px;
             text-align: center; cursor: pointer; transition: 0.3s; font-size: 13px;
         }
         .cat-item.active { background: var(--neon-blue); color: #000; font-weight: bold; }
-
         .status-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; background: #2481cc; font-size: 12px; margin-bottom: 10px; }
         .timer-box { font-size: 32px; font-weight: bold; color: var(--accent-red); text-align: center; margin: 15px 0; }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .waiting-text { font-style: italic; opacity: 0.8; text-align: center; height: 40px; margin-top: 10px; }
+        .waiting-text { font-style: italic; opacity: 0.8; text-align: center; height: 40px; margin-top: 10px; color: var(--neon-blue); }
     </style>
 </head>
 <body>
 
-    <div id="role-selection" class="container">
-        <div class="card" style="text-align: center; margin-top: 50px;">
+    <div id="page-role" class="container">
+        <div class="card" style="text-align: center; margin-top: 40px;">
             <h1>VSH SERVICE</h1>
-            <p>Система распределения ресурсов</p>
+            <p style="opacity: 0.7;">Система распределения ресурсов</p>
         </div>
         <button class="btn" onclick="showPage('page-customer')">🙋‍♂️ МНЕ НУЖНЫ РАБОЧИЕ</button>
         <button class="btn btn-outline" onclick="showPage('page-worker-auth')">🛠️ ВХОД ДЛЯ БРИГАД</button>
@@ -84,65 +75,62 @@
                 <div class="cat-item" onclick="selectCat(this, 'tech')">СПЕЦТЕХНИКА</div>
             </div>
             <div id="cat-description" class="card" style="font-size: 14px; background: rgba(0,242,255,0.05); margin-bottom:0;">
-                Мы держим самые оптимальные цены в городе: 850-900₽/час. Уверенное качество без лишних слов.
+                Грузчики: 850-900₽/час. Уверенное качество.
             </div>
         </div>
-
-        <div class="card" id="customer-form">
+        <div class="card">
             <input type="text" id="cust-name" class="input" placeholder="Ваше имя">
-            <input type="text" id="cust-address" class="input" placeholder="Адрес проведения работ">
+            <input type="text" id="cust-address" class="input" placeholder="Адрес">
             <input type="text" id="cust-task" class="input" placeholder="Что нужно сделать?">
             <input type="tel" id="cust-phone" class="input" placeholder="Номер телефона">
             <button class="btn" id="submit-btn" onclick="submitOrder()">🚀 ОТПРАВИТЬ ЗАЯВКУ</button>
-            <button class="btn btn-outline" onclick="showPage('role-selection')">НАЗАД</button>
+            <button class="btn btn-outline" onclick="showPage('page-role')">НАЗАД</button>
         </div>
+    </div>
 
-        <div id="customer-status" class="hidden container">
-            <div class="card" style="text-align:center;">
-                <div class="status-badge">ПОИСК БРИГАДЫ</div>
-                <h2 id="status-user-name">Заявка принята!</h2>
-                <div class="waiting-text" id="waiting-messages">Ребята уже зашнуровывают берцы...</div>
-                <p style="font-size: 14px; opacity: 0.7; margin-top:20px;">Мы уведомим вас в боте, когда исполнитель будет назначен.</p>
-                <button class="btn btn-outline" onclick="tg.close()">ЗАКРЫТЬ</button>
-            </div>
+    <div id="customer-status" class="container hidden">
+        <div class="card" style="text-align:center;">
+            <div class="status-badge">ПОИСК БРИГАДЫ</div>
+            <h2 id="status-user-name">Заявка принята!</h2>
+            <div class="waiting-text" id="waiting-messages">Ребята уже зашнуровывают берцы...</div>
+            <button class="btn btn-outline" style="margin-top:20px;" onclick="tg.close()">ЗАКРЫТЬ</button>
         </div>
     </div>
 
     <div id="page-worker-auth" class="container hidden">
         <div class="card">
-            <h2>ДОСТУП В СИСТЕМУ</h2>
+            <h2>ДОСТУП</h2>
             <input type="password" id="worker-code" class="input" placeholder="Секретный код">
             <button class="btn" onclick="workerLogin()">ВОЙТИ</button>
-            <button class="btn btn-outline" onclick="showPage('role-selection')">НАЗАД</button>
+            <button class="btn btn-outline" onclick="showPage('page-role')">НАЗАД</button>
         </div>
     </div>
 
     <div id="page-worker-cabinet" class="container hidden">
-        <div class="card">
-            <h2 style="margin:0;">📋 ДОСТУПНЫЕ ЗАЯВКИ</h2>
-            <p style="font-size: 12px; opacity:0.6;">Обновляется в реальном времени</p>
+        <div class="card"><h2>📋 ЗАЯВКИ</h2></div>
+        <div id="orders-list">
+            <div class="card">
+                <b>Грузчики | 2 чел.</b><br>📍 Центр<br>
+                <button class="btn" onclick="startAcceptProcess('Центр', '900₽/час')">ПРИНЯТЬ</button>
+            </div>
         </div>
-        <div id="orders-list"></div>
-        <button class="btn btn-outline" onclick="showPage('role-selection')">ВЫХОД</button>
     </div>
 
     <div id="page-warning" class="container hidden">
         <div class="card" style="border-color: var(--accent-red);">
-            <h2 style="color: var(--accent-red);">⚠️ ВНИМАНИЕ!</h2>
-            <div id="warning-details" style="line-height: 1.6; margin-bottom: 15px;"></div>
-            <div class="timer-box" id="warning-timer">20</div>
-            <button id="btn-accept-final" class="btn" disabled onclick="confirmAccept()">ОЗНАКОМИЛСЯ, ПРИНИМАЮ</button>
-            <button class="btn btn-outline" onclick="showPage('page-worker-cabinet')">ОТМЕНА</button>
+            <h2 style="color: var(--accent-red);">⚠️ ПРАВИЛА</h2>
+            <div id="warning-details"></div>
+            <div class="timer-box" id="warning-timer">10</div>
+            <button id="btn-accept-final" class="btn" disabled onclick="confirmAccept()">ПРИНИМАЮ</button>
         </div>
     </div>
 
     <div id="page-contacts" class="container hidden">
         <div class="card" style="text-align:center;">
             <h2>КОНТАКТЫ</h2>
-            <div id="final-contacts" style="font-size: 18px; margin: 20px 0; text-align:left;"></div>
+            <div id="final-contacts" style="margin: 20px 0; text-align:left;"></div>
             <div class="timer-box" id="contact-timer">03:00</div>
-            <p style="font-size: 13px; opacity:0.8;">У вас есть 3 минуты на звонок. Поторопитесь.</p>
-            <button class="btn" onclick="finalCallDone()">✅ ПОЗВОНИЛ, ЕДУ</button>
+            <button class="btn" onclick="tg.close()">✅ ЕДУ НА ЗАКАЗ</button>
         </div>
     </div>
 
@@ -152,133 +140,72 @@
         tg.expand();
 
         let currentCategory = 'loaders';
-        const BACKEND_URL = 'https://vsh-app-production.up.railway.app';
+        const BACKEND_URL = 'https://vsh-app-production.up.railway.app'; 
 
-        function showPage(pageId) {
+        function showPage(id) {
             document.querySelectorAll('.container').forEach(p => p.classList.add('hidden'));
-            document.getElementById(pageId).classList.remove('hidden');
-            window.scrollTo(0,0);
+            document.getElementById(id).classList.remove('hidden');
         }
 
         function selectCat(el, cat) {
             document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
             currentCategory = cat;
-            const desc = document.getElementById('cat-description');
-            if(cat === 'loaders') desc.innerHTML = "<b>ГРУЗЧИКИ:</b> Оптимальный сегмент 850-900₽/час. Уверенная работа, крепкие ребята.";
-            if(cat === 'workers') desc.innerHTML = "<b>РАЗНОРАБОЧИЕ:</b> 8-часовая смена от 5000₽/чел. Для любых задач на объекте.";
-            if(cat === 'tech') desc.innerHTML = "<b>СПЕЦТЕХНИКА:</b> По договоренности. Работаем четко под ваш запрос.";
+            const d = document.getElementById('cat-description');
+            if(cat === 'loaders') d.innerText = "Грузчики: 850-900₽/час. Уверенное качество.";
+            if(cat === 'workers') d.innerText = "Разнорабочие: от 5000₽ за смену. Крепкие парни.";
+            if(cat === 'tech') d.innerText = "Спецтехника: По договоренности. Быстрая подача.";
         }
 
         async function submitOrder() {
             const btn = document.getElementById('submit-btn');
-            const name = document.getElementById('cust-name').value;
-            const addr = document.getElementById('cust-address').value;
-            const task = document.getElementById('cust-task').value;
-            const phone = document.getElementById('cust-phone').value;
+            const data = {
+                name: document.getElementById('cust-name').value,
+                address: document.getElementById('cust-address').value,
+                task: document.getElementById('cust-task').value,
+                phone: document.getElementById('cust-phone').value,
+                category: currentCategory
+            };
 
-            if(!name || !addr || !task || !phone) {
-                tg.showAlert("Заполните все поля!");
-                return;
-            }
+            if(!data.name || !data.address || !data.phone) return tg.showAlert("Заполни поля!");
 
             btn.disabled = true;
-            btn.innerText = "ОТПРАВКА...";
-
-            const orderData = { name, address: addr, task, phone, category: currentCategory };
-
             try {
-                const response = await fetch(`${BACKEND_URL}/api/orders`, {
+                await fetch(`${BACKEND_URL}/api/orders`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(orderData)
+                    body: JSON.stringify(data)
                 });
-
-                if (response.ok) {
-                    showPage('customer-status');
-                    document.getElementById('status-user-name').innerText = `${name}, заявка принята!`;
-                    startSarcasticTexts();
-                } else {
-                    tg.showAlert("Ошибка сервера. Но мы всё равно увидим вашу заявку в боте.");
-                }
-            } catch(e) {
-                tg.showAlert("Ошибка сети. Проверьте интернет.");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "🚀 ОТПРАВИТЬ ЗАЯВКУ";
-            }
-        }
-
-        function startSarcasticTexts() {
-            const msgs = ["Ребята уже зашнуровывают берцы...", "Кто-то прогревает Газель...", "Бригадир ищет перчатки...", "Почти нашли самых бодных парней..."];
-            let i = 0;
-            setInterval(() => {
-                i = (i + 1) % msgs.length;
-                document.getElementById('waiting-messages').innerText = msgs[i];
-            }, 3500);
+                showPage('customer-status');
+                const msgs = ["Ищем бригаду...", "Бригадир на связи...", "Машина выезжает..."];
+                let i = 0; setInterval(() => { i = (i + 1) % msgs.length; document.getElementById('waiting-messages').innerText = msgs[i]; }, 3000);
+            } catch(e) { tg.showAlert("Ошибка сервера!"); btn.disabled = false; }
         }
 
         function workerLogin() {
-            if(document.getElementById('worker-code').value === '777') {
-                showPage('page-worker-cabinet');
-                loadOrdersForWorkers();
-            } else {
-                tg.showAlert("Неверный код!");
-            }
-        }
-
-        function loadOrdersForWorkers() {
-            const list = document.getElementById('orders-list');
-            list.innerHTML = `
-                <div class="card">
-                    <div class="status-badge">СВОБОДНО</div>
-                    <b>Грузчики | 2 чел.</b><br>
-                    📍 Ул. Ленина, 45<br>
-                    🛠 Подъем сейфа<br>
-                    <button class="btn" onclick="startAcceptProcess('Ул. Ленина, 45', '850₽/час')">ВЗЯТЬ ЗАКАЗ</button>
-                </div>
-            `;
+            if(document.getElementById('worker-code').value === '777') showPage('page-worker-cabinet');
+            else tg.showAlert("Код неверный!");
         }
 
         function startAcceptProcess(addr, rate) {
             showPage('page-warning');
-            document.getElementById('warning-details').innerHTML = `<b>ОБЪЕКТ:</b> ${addr}<br><b>СТАВКА:</b> ${rate}<br><br>Принял и не приехал? Блокировка навсегда.`;
-            
-            let timeLeft = 20;
-            const btn = document.getElementById('btn-accept-final');
-            btn.disabled = true;
-            const timer = setInterval(() => {
-                timeLeft--;
-                document.getElementById('warning-timer').innerText = timeLeft;
-                if(timeLeft <= 0) {
-                    clearInterval(timer);
-                    btn.disabled = false;
-                    document.getElementById('warning-timer').innerText = "OK";
-                }
+            document.getElementById('warning-details').innerHTML = `Объект: ${addr}<br>Ставка: ${rate}<br><br>Не приедешь — бан.`;
+            let t = 10;
+            const b = document.getElementById('btn-accept-final');
+            const it = setInterval(() => {
+                t--; document.getElementById('warning-timer').innerText = t;
+                if(t <= 0) { clearInterval(it); b.disabled = false; }
             }, 1000);
         }
 
         function confirmAccept() {
             showPage('page-contacts');
-            document.getElementById('final-contacts').innerHTML = `👤 <b>Клиент:</b> Александр<br>📞 <b>Тел:</b> <a href="tel:+79991234567" style="color:var(--neon-blue);">+7 (999) 123-45-67</a>`;
-            
-            let timeLeft = 180;
-            const timer = setInterval(() => {
-                timeLeft--;
-                let m = Math.floor(timeLeft / 60);
-                let s = timeLeft % 60;
-                document.getElementById('contact-timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
-                if(timeLeft <= 0) {
-                    clearInterval(timer);
-                    tg.showAlert("Время вышло!");
-                    showPage('page-worker-cabinet');
-                }
+            document.getElementById('final-contacts').innerHTML = `👤 Александр<br>📞 <a href="tel:+79991234567" style="color:var(--neon-blue);">+7 (999) 123-45-67</a>`;
+            let t = 180;
+            setInterval(() => {
+                t--; let m = Math.floor(t/60), s = t%60;
+                document.getElementById('contact-timer').innerText = `${m}:${s<10?'0'+s:s}`;
             }, 1000);
-        }
-
-        function finalCallDone() {
-            tg.showAlert("Принято! Выезжайте.");
-            tg.close();
         }
     </script>
 </body>
