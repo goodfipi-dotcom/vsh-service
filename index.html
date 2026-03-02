@@ -32,9 +32,8 @@
             border-radius: 20px; padding: 20px; margin-bottom: 20px;
         }
 
-        h1, h2 { color: var(--neon-blue); text-transform: uppercase; letter-spacing: 1px; }
+        h1, h2 { color: var(--neon-blue); text-transform: uppercase; letter-spacing: 1px; margin: 0 0 15px 0; }
         
-        /* Кнопки */
         .btn {
             display: flex; align-items: center; justify-content: center;
             background: linear-gradient(135deg, #2481cc, #00d4ff);
@@ -42,32 +41,27 @@
             border-radius: 14px; width: 100%; font-weight: bold; font-size: 16px;
             cursor: pointer; transition: 0.2s;
         }
-        .btn:disabled { background: #475569; opacity: 0.6; cursor: not-allowed; }
+        .btn:disabled { background: #475569 !important; opacity: 0.6; cursor: not-allowed; }
         .btn-outline { background: transparent; border: 2px solid var(--neon-blue); color: var(--neon-blue); }
-        .btn-danger { background: var(--accent-red); }
 
-        /* Поля ввода */
         .input {
             width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             background: rgba(15, 23, 42, 0.6); color: #fff; font-size: 16px; box-sizing: border-box;
         }
 
-        /* Выбор категории */
         .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .cat-item {
             padding: 15px; border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 12px;
-            text-align: center; cursor: pointer; transition: 0.3s;
+            text-align: center; cursor: pointer; transition: 0.3s; font-size: 13px;
         }
         .cat-item.active { background: var(--neon-blue); color: #000; font-weight: bold; }
 
-        /* Статусы и таймеры */
         .status-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; background: #2481cc; font-size: 12px; margin-bottom: 10px; }
-        .timer-box { font-size: 24px; font-weight: bold; color: var(--accent-red); text-align: center; margin: 15px 0; }
+        .timer-box { font-size: 32px; font-weight: bold; color: var(--accent-red); text-align: center; margin: 15px 0; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .waiting-text { font-style: italic; opacity: 0.8; text-align: center; height: 40px; }
+        .waiting-text { font-style: italic; opacity: 0.8; text-align: center; height: 40px; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -89,7 +83,7 @@
                 <div class="cat-item" onclick="selectCat(this, 'workers')">РАЗНОРАБОЧИЕ</div>
                 <div class="cat-item" onclick="selectCat(this, 'tech')">СПЕЦТЕХНИКА</div>
             </div>
-            <div id="cat-description" class="card" style="font-size: 14px; background: rgba(0,242,255,0.05);">
+            <div id="cat-description" class="card" style="font-size: 14px; background: rgba(0,242,255,0.05); margin-bottom:0;">
                 Мы держим самые оптимальные цены в городе: 850-900₽/час. Уверенное качество без лишних слов.
             </div>
         </div>
@@ -97,18 +91,19 @@
         <div class="card" id="customer-form">
             <input type="text" id="cust-name" class="input" placeholder="Ваше имя">
             <input type="text" id="cust-address" class="input" placeholder="Адрес проведения работ">
-            <input type="text" id="cust-task" class="input" placeholder="Что конкретно нужно делать?">
+            <input type="text" id="cust-task" class="input" placeholder="Что нужно сделать?">
             <input type="tel" id="cust-phone" class="input" placeholder="Номер телефона">
-            <button class="btn" onclick="submitOrder()">🚀 ОТПРАВИТЬ ЗАЯВКУ</button>
+            <button class="btn" id="submit-btn" onclick="submitOrder()">🚀 ОТПРАВИТЬ ЗАЯВКУ</button>
+            <button class="btn btn-outline" onclick="showPage('role-selection')">НАЗАД</button>
         </div>
 
-        <div id="customer-status" class="hidden">
-            <div class="card">
-                <div class="status-badge" id="order-status-label">ПОИСК БРИГАДЫ</div>
-                <h2 id="status-user-name">Иван, заявка принята!</h2>
+        <div id="customer-status" class="hidden container">
+            <div class="card" style="text-align:center;">
+                <div class="status-badge">ПОИСК БРИГАДЫ</div>
+                <h2 id="status-user-name">Заявка принята!</h2>
                 <div class="waiting-text" id="waiting-messages">Ребята уже зашнуровывают берцы...</div>
-                <p style="font-size: 14px; opacity: 0.7;">Мы автоматически уведомим вас в боте, когда исполнитель будет назначен.</p>
-                <button class="btn btn-outline" onclick="tg.close()">ВЕРНУТЬСЯ В БОТ</button>
+                <p style="font-size: 14px; opacity: 0.7; margin-top:20px;">Мы уведомим вас в боте, когда исполнитель будет назначен.</p>
+                <button class="btn btn-outline" onclick="tg.close()">ЗАКРЫТЬ</button>
             </div>
         </div>
     </div>
@@ -118,6 +113,7 @@
             <h2>ДОСТУП В СИСТЕМУ</h2>
             <input type="password" id="worker-code" class="input" placeholder="Секретный код">
             <button class="btn" onclick="workerLogin()">ВОЙТИ</button>
+            <button class="btn btn-outline" onclick="showPage('role-selection')">НАЗАД</button>
         </div>
     </div>
 
@@ -126,93 +122,95 @@
             <h2 style="margin:0;">📋 ДОСТУПНЫЕ ЗАЯВКИ</h2>
             <p style="font-size: 12px; opacity:0.6;">Обновляется в реальном времени</p>
         </div>
-        <div id="orders-list">
-            </div>
+        <div id="orders-list"></div>
+        <button class="btn btn-outline" onclick="showPage('role-selection')">ВЫХОД</button>
     </div>
 
     <div id="page-warning" class="container hidden">
         <div class="card" style="border-color: var(--accent-red);">
-            <h2 style="color: var(--accent-red);">⚠️ ВНИМАНИЕ (ПРОЧИТАТЬ!)</h2>
-            <div id="warning-details" style="line-height: 1.6;">
-                </div>
+            <h2 style="color: var(--accent-red);">⚠️ ВНИМАНИЕ!</h2>
+            <div id="warning-details" style="line-height: 1.6; margin-bottom: 15px;"></div>
             <div class="timer-box" id="warning-timer">20</div>
-            <button id="btn-accept-final" class="btn" disabled onclick="confirmAccept()">ОЗНАКОМИЛСЯ, ПРИНИМАЮ ЗАЯВКУ</button>
-            <button class="btn btn-outline" onclick="showPage('page-worker-cabinet')">ОТКАЗАТЬСЯ</button>
+            <button id="btn-accept-final" class="btn" disabled onclick="confirmAccept()">ОЗНАКОМИЛСЯ, ПРИНИМАЮ</button>
+            <button class="btn btn-outline" onclick="showPage('page-worker-cabinet')">ОТМЕНА</button>
         </div>
     </div>
 
     <div id="page-contacts" class="container hidden">
-        <div class="card">
-            <h2>КОНТАКТЫ ЗАКАЗЧИКА</h2>
-            <div id="final-contacts" style="font-size: 18px; margin: 20px 0;">
-                </div>
+        <div class="card" style="text-align:center;">
+            <h2>КОНТАКТЫ</h2>
+            <div id="final-contacts" style="font-size: 18px; margin: 20px 0; text-align:left;"></div>
             <div class="timer-box" id="contact-timer">03:00</div>
-            <p style="text-align: center; font-size: 13px;">У вас есть 3 минуты, чтобы позвонить. Иначе заявка вернется в систему.</p>
-            <button class="btn" onclick="finalCallDone()">✅ ПОЗВОНИЛ, ЕДУ НА ЗАЯВКУ</button>
+            <p style="font-size: 13px; opacity:0.8;">У вас есть 3 минуты на звонок. Поторопитесь.</p>
+            <button class="btn" onclick="finalCallDone()">✅ ПОЗВОНИЛ, ЕДУ</button>
         </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
+        tg.ready();
         tg.expand();
 
         let currentCategory = 'loaders';
-        let selectedOrderId = null;
-        const ADMIN_ID = 7693616720; // Твой ID для режима владельца
         const BACKEND_URL = 'https://vsh-app-production.up.railway.app';
 
         function showPage(pageId) {
             document.querySelectorAll('.container').forEach(p => p.classList.add('hidden'));
             document.getElementById(pageId).classList.remove('hidden');
+            window.scrollTo(0,0);
         }
 
-        // --- ЛОГИКА ЗАКАЗЧИКА ---
         function selectCat(el, cat) {
             document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
             currentCategory = cat;
             const desc = document.getElementById('cat-description');
-            if(cat === 'loaders') desc.innerHTML = "<b>ГРУЗЧИКИ:</b> Оптимальный ценовой сегмент 850-900₽/час. Уверенная работа, крепкие ребята.";
+            if(cat === 'loaders') desc.innerHTML = "<b>ГРУЗЧИКИ:</b> Оптимальный сегмент 850-900₽/час. Уверенная работа, крепкие ребята.";
             if(cat === 'workers') desc.innerHTML = "<b>РАЗНОРАБОЧИЕ:</b> 8-часовая смена от 5000₽/чел. Для любых задач на объекте.";
             if(cat === 'tech') desc.innerHTML = "<b>СПЕЦТЕХНИКА:</b> По договоренности. Работаем четко под ваш запрос.";
         }
 
         async function submitOrder() {
+            const btn = document.getElementById('submit-btn');
             const name = document.getElementById('cust-name').value;
-            const address = document.getElementById('cust-address').value;
+            const addr = document.getElementById('cust-address').value;
             const task = document.getElementById('cust-task').value;
             const phone = document.getElementById('cust-phone').value;
 
-            if(!name || !address || !task || !phone) {
-                tg.showAlert("Заполните все поля, чтобы мы могли начать работу!");
+            if(!name || !addr || !task || !phone) {
+                tg.showAlert("Заполните все поля!");
                 return;
             }
 
-            const orderData = { name, address, task, phone, category: currentCategory, type: 'new_order' };
+            btn.disabled = true;
+            btn.innerText = "ОТПРАВКА...";
 
-            // 1. Отправляем на сервер (и владельцу)
+            const orderData = { name, address: addr, task, phone, category: currentCategory };
+
             try {
-                await fetch(`${BACKEND_URL}/api/orders`, {
+                const response = await fetch(`${BACKEND_URL}/api/orders`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(orderData)
                 });
-            } catch(e) {}
 
-            // 2. Показываем статус внутри приложения
-            document.getElementById('customer-form').classList.add('hidden');
-            document.getElementById('customer-status').classList.remove('hidden');
-            document.getElementById('status-user-name').innerText = `${name}, заявка принята!`;
-            startSarcasticTexts();
+                if (response.ok) {
+                    showPage('customer-status');
+                    document.getElementById('status-user-name').innerText = `${name}, заявка принята!`;
+                    startSarcasticTexts();
+                } else {
+                    tg.showAlert("Ошибка сервера. Но мы всё равно увидим вашу заявку в боте.");
+                }
+            } catch(e) {
+                tg.showAlert("Ошибка сети. Проверьте интернет.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "🚀 ОТПРАВИТЬ ЗАЯВКУ";
+            }
         }
 
         function startSarcasticTexts() {
-            const msgs = [
-                "Ребята уже зашнуровывают берцы...",
-                "Кто-то уже прогревает Газель...",
-                "Бригадир ищет чистые перчатки...",
-                "Почти нашли самых бодрых парней..."
-            ];
+            const msgs = ["Ребята уже зашнуровывают берцы...", "Кто-то прогревает Газель...", "Бригадир ищет перчатки...", "Почти нашли самых бодных парней..."];
             let i = 0;
             setInterval(() => {
                 i = (i + 1) % msgs.length;
@@ -220,40 +218,32 @@
             }, 3500);
         }
 
-        // --- ЛОГИКА РАБОЧИХ ---
         function workerLogin() {
-            const code = document.getElementById('worker-code').value;
-            if(code === '777') {
+            if(document.getElementById('worker-code').value === '777') {
                 showPage('page-worker-cabinet');
                 loadOrdersForWorkers();
             } else {
-                tg.showAlert("Код неверный. Доступ только для своих.");
+                tg.showAlert("Неверный код!");
             }
         }
 
-        async function loadOrdersForWorkers() {
-            // Имитация загрузки. В реальности — запрос к BACKEND_URL
+        function loadOrdersForWorkers() {
             const list = document.getElementById('orders-list');
             list.innerHTML = `
                 <div class="card">
-                    <div class="status-badge">НОВЫЙ</div>
+                    <div class="status-badge">СВОБОДНО</div>
                     <b>Грузчики | 2 чел.</b><br>
                     📍 Ул. Ленина, 45<br>
-                    🛠 Подъем стройматериалов<br>
-                    <button class="btn" onclick="startAcceptProcess(1, 'Ул. Ленина, 45', '850₽/час')">ПРИНЯТЬ ЗАЯВКУ</button>
+                    🛠 Подъем сейфа<br>
+                    <button class="btn" onclick="startAcceptProcess('Ул. Ленина, 45', '850₽/час')">ВЗЯТЬ ЗАКАЗ</button>
                 </div>
             `;
         }
 
-        function startAcceptProcess(id, addr, rate) {
-            selectedOrderId = id;
+        function startAcceptProcess(addr, rate) {
             showPage('page-warning');
-            document.getElementById('warning-details').innerHTML = `
-                <b>ОБЪЕКТ:</b> ${addr}<br>
-                <b>СТАВКА:</b> ${rate}<br><br>
-                <b>ПРАВИЛА:</b> Если вы принимаете заказ и не являетесь на него — ваш аккаунт блокируется в системе <b>НАВСЕГДА</b>. Никаких вторых шансов.
-            `;
-
+            document.getElementById('warning-details').innerHTML = `<b>ОБЪЕКТ:</b> ${addr}<br><b>СТАВКА:</b> ${rate}<br><br>Принял и не приехал? Блокировка навсегда.`;
+            
             let timeLeft = 20;
             const btn = document.getElementById('btn-accept-final');
             btn.disabled = true;
@@ -263,39 +253,33 @@
                 if(timeLeft <= 0) {
                     clearInterval(timer);
                     btn.disabled = false;
-                    document.getElementById('warning-timer').innerText = "ГОТОВО";
+                    document.getElementById('warning-timer').innerText = "OK";
                 }
             }, 1000);
         }
 
         function confirmAccept() {
             showPage('page-contacts');
-            document.getElementById('final-contacts').innerHTML = `
-                👤 <b>Клиент:</b> Александр<br>
-                📞 <b>Тел:</b> <a href="tel:+79998887766" style="color: var(--neon-blue);">+7 (999) 888-77-66</a>
-            `;
-
-            let timeLeft = 180; // 3 минуты
+            document.getElementById('final-contacts').innerHTML = `👤 <b>Клиент:</b> Александр<br>📞 <b>Тел:</b> <a href="tel:+79991234567" style="color:var(--neon-blue);">+7 (999) 123-45-67</a>`;
+            
+            let timeLeft = 180;
             const timer = setInterval(() => {
                 timeLeft--;
                 let m = Math.floor(timeLeft / 60);
                 let s = timeLeft % 60;
-                document.getElementById('contact-timer').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-                
+                document.getElementById('contact-timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
                 if(timeLeft <= 0) {
                     clearInterval(timer);
-                    tg.showAlert("Время истекло! Заявка возвращена в систему.");
+                    tg.showAlert("Время вышло!");
                     showPage('page-worker-cabinet');
                 }
             }, 1000);
         }
 
         function finalCallDone() {
-            tg.showAlert("Отлично! Диспетчер видит, что вы на связи. Удачной работы!");
+            tg.showAlert("Принято! Выезжайте.");
             tg.close();
         }
-
     </script>
 </body>
 </html>
- 
