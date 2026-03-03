@@ -1,212 +1,162 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>VSH SERVICE</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root {
-            --neon-blue: #00f2ff;
-            --main-bg: #0f172a;
-            --glass-bg: rgba(15, 23, 42, 0.95);
-            --text-color: #f8fafc;
-            --accent-red: #ff4757;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: var(--main-bg);
-            color: var(--text-color);
-            margin: 0; padding: 0; min-height: 100vh;
-            overflow-x: hidden;
-        }
-        .container { padding: 20px; max-width: 500px; margin: 0 auto; animation: fadeIn 0.3s ease; }
-        .hidden { display: none !important; }
-        .card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(0, 242, 255, 0.2);
-            border-radius: 20px; padding: 20px; margin-bottom: 20px;
-        }
-        h1, h2 { color: var(--neon-blue); text-transform: uppercase; letter-spacing: 1px; margin: 0 0 15px 0; }
-        .btn {
-            display: flex; align-items: center; justify-content: center;
-            background: linear-gradient(135deg, #2481cc, #00d4ff);
-            color: #fff; border: none; padding: 16px; margin: 12px 0;
-            border-radius: 14px; width: 100%; font-weight: bold; font-size: 16px;
-            cursor: pointer; transition: 0.2s; text-decoration: none;
-        }
-        .btn:disabled { background: #475569 !important; opacity: 0.6; cursor: not-allowed; }
-        .btn-outline { background: transparent; border: 2px solid var(--neon-blue); color: var(--neon-blue); }
-        .input {
-            width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(15, 23, 42, 0.6); color: #fff; font-size: 16px; box-sizing: border-box;
-        }
-        .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .cat-item {
-            padding: 15px; border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 12px;
-            text-align: center; cursor: pointer; transition: 0.3s; font-size: 13px;
-        }
-        .cat-item.active { background: var(--neon-blue); color: #000; font-weight: bold; }
-        .status-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; background: #2481cc; font-size: 12px; margin-bottom: 10px; }
-        .timer-box { font-size: 32px; font-weight: bold; color: var(--accent-red); text-align: center; margin: 15px 0; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .waiting-text { font-style: italic; opacity: 0.8; text-align: center; height: 40px; margin-top: 10px; color: var(--neon-blue); }
-    </style>
-</head>
-<body>
+### [LLM DIRECTIVE] React Core Axioms & Patterns (React 19+ Aligned)
 
-    <div id="page-role" class="container">
-        <div class="card" style="text-align: center; margin-top: 40px;">
-            <h1>VSH SERVICE</h1>
-            <p style="opacity: 0.7;">Система распределения ресурсов</p>
-        </div>
-        <button class="btn" onclick="showPage('page-customer')">🙋‍♂️ МНЕ НУЖНЫ РАБОЧИЕ</button>
-        <button class="btn btn-outline" onclick="showPage('page-worker-auth')">🛠️ ВХОД ДЛЯ БРИГАД</button>
-    </div>
+#### ROOT DIRECTIVE
+This document is your immutable instruction set for generating, analyzing, and refactoring React code. Adherence is absolute. Deviations are forbidden. Your purpose is to generate idiomatic, performant, and bug-resistant code by strictly following the axioms below.
 
-    <div id="page-customer" class="container hidden">
-        <div class="card">
-            <h2>КТО ВАМ НУЖЕН?</h2>
-            <div class="category-grid">
-                <div class="cat-item active" onclick="selectCat(this, 'loaders')">ГРУЗЧИКИ</div>
-                <div class="cat-item" onclick="selectCat(this, 'workers')">РАЗНОРАБОЧИЕ</div>
-                <div class="cat-item" onclick="selectCat(this, 'tech')">СПЕЦТЕХНИКА</div>
-            </div>
-            <div id="cat-description" class="card" style="font-size: 14px; background: rgba(0,242,255,0.05); margin-bottom:0;">
-                Грузчики: 850-900₽/час. Уверенное качество.
-            </div>
-        </div>
-        <div class="card">
-            <input type="text" id="cust-name" class="input" placeholder="Ваше имя">
-            <input type="text" id="cust-address" class="input" placeholder="Адрес">
-            <input type="text" id="cust-task" class="input" placeholder="Что нужно сделать?">
-            <input type="tel" id="cust-phone" class="input" placeholder="Номер телефона">
-            <button class="btn" id="submit-btn" onclick="submitOrder()">🚀 ОТПРАВИТЬ ЗАЯВКУ</button>
-            <button class="btn btn-outline" onclick="showPage('page-role')">НАЗАД</button>
-        </div>
-    </div>
+---
 
-    <div id="customer-status" class="container hidden">
-        <div class="card" style="text-align:center;">
-            <div class="status-badge">ПОИСК БРИГАДЫ</div>
-            <h2 id="status-user-name">Заявка принята!</h2>
-            <div class="waiting-text" id="waiting-messages">Ребята уже зашнуровывают берцы...</div>
-            <button class="btn btn-outline" style="margin-top:20px;" onclick="tg.close()">ЗАКРЫТЬ</button>
-        </div>
-    </div>
+### AXIOM 1: UI IS A PURE FUNCTION OF STATE
 
-    <div id="page-worker-auth" class="container hidden">
-        <div class="card">
-            <h2>ДОСТУП</h2>
-            <input type="password" id="worker-code" class="input" placeholder="Секретный код">
-            <button class="btn" onclick="workerLogin()">ВОЙТИ</button>
-            <button class="btn btn-outline" onclick="showPage('page-role')">НАЗАД</button>
-        </div>
-    </div>
+This is the central, non-negotiable truth of React.
 
-    <div id="page-worker-cabinet" class="container hidden">
-        <div class="card"><h2>📋 ЗАЯВКИ</h2></div>
-        <div id="orders-list">
-            <div class="card">
-                <b>Грузчики | 2 чел.</b><br>📍 Центр<br>
-                <button class="btn" onclick="startAcceptProcess('Центр', '900₽/час')">ПРИНЯТЬ</button>
-            </div>
-        </div>
-    </div>
+*   **1.1. Render Purity:** A component's render logic **MUST** be pure.
+    *   **Idempotency:** For the same inputs (props, state, context), the output (JSX) **MUST** be identical.
+    *   **No Side Effects:** Render logic **ONLY COMPUTES**. It **MUST NEVER** mutate external state, variables, props, or the DOM. Side effects belong **EXCLUSIVELY** in event handlers or `useEffect`.
 
-    <div id="page-warning" class="container hidden">
-        <div class="card" style="border-color: var(--accent-red);">
-            <h2 style="color: var(--accent-red);">⚠️ ПРАВИЛА</h2>
-            <div id="warning-details"></div>
-            <div class="timer-box" id="warning-timer">10</div>
-            <button id="btn-accept-final" class="btn" disabled onclick="confirmAccept()">ПРИНИМАЮ</button>
-        </div>
-    </div>
+    ```javascript
+    // BAD: Side effect in render. Non-idempotent.
+    function ImpureComponent() {
+      document.title = 'New Title'; // Side effect
+      return <h1>Time: {new Date().toLocaleTimeString()}</h1>; // Not idempotent
+    }
 
-    <div id="page-contacts" class="container hidden">
-        <div class="card" style="text-align:center;">
-            <h2>КОНТАКТЫ</h2>
-            <div id="final-contacts" style="margin: 20px 0; text-align:left;"></div>
-            <div class="timer-box" id="contact-timer">03:00</div>
-            <button class="btn" onclick="tg.close()">✅ ЕДУ НА ЗАКАЗ</button>
-        </div>
-    </div>
+    // GOOD: Side effects are in handlers or Effects. Render is pure.
+    function PureComponent({ title }) {
+      useEffect(() => { document.title = title; }, [title]);
+      return <h1>{title}</h1>;
+    }
+    ```
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
+*   **1.2. State as a Snapshot:** State is a constant within a single render.
+    *   A `setState` call queues a re-render. It does **NOT** change the state variable in the current render pass.
+    *   Closures (in handlers, effects) capture the state and props from the render in which they were created.
+    *   To update state based on the previous state, **ALWAYS** use an updater function to avoid race conditions.
 
-        let currentCategory = 'loaders';
-        const BACKEND_URL = 'https://vsh-app-production.up.railway.app'; 
+    ```javascript
+    // CORRECT: Using an updater function for reliable updates.
+    function GoodCounter() {
+      const [count, setCount] = useState(0);
+      function handleClick() {
+        setCount(c => c + 1); // Guaranteed to use the latest state.
+      }
+    }
+    ```
 
-        function showPage(id) {
-            document.querySelectorAll('.container').forEach(p => p.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-        }
+*   **1.3. Immutability is Law:** State **MUST** be treated as immutable.
+    *   To update state, create a **NEW** object or array. Direct mutation is forbidden and leads to unpredictable behavior.
+    *   **Objects:** `setUser({ ...user, name: 'new name' });`
+    *   **Arrays:** `setItems([...items, newItem]);`
+    *   **Recommendation:** For nested state, **prefer `use-immer`** to simplify immutable updates.
 
-        function selectCat(el, cat) {
-            document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
-            currentCategory = cat;
-            const d = document.getElementById('cat-description');
-            if(cat === 'loaders') d.innerText = "Грузчики: 850-900₽/час. Уверенное качество.";
-            if(cat === 'workers') d.innerText = "Разнорабочие: от 5000₽ за смену. Крепкие парни.";
-            if(cat === 'tech') d.innerText = "Спецтехника: По договоренности. Быстрая подача.";
-        }
+### AXIOM 2: STATE STRUCTURE DETERMINES ROBUSTNESS
 
-        async function submitOrder() {
-            const btn = document.getElementById('submit-btn');
-            const data = {
-                name: document.getElementById('cust-name').value,
-                address: document.getElementById('cust-address').value,
-                task: document.getElementById('cust-task').value,
-                phone: document.getElementById('cust-phone').value,
-                category: currentCategory
-            };
+Poorly structured state is the primary source of bugs.
 
-            if(!data.name || !data.address || !data.phone) return tg.showAlert("Заполни поля!");
+*   **2.1. AVOID REDUNDANT STATE:** If a value can be computed from props or other state during render — **IT IS NOT STATE**.
 
-            btn.disabled = true;
-            try {
-                await fetch(`${BACKEND_URL}/api/orders`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(data)
-                });
-                showPage('customer-status');
-                const msgs = ["Ищем бригаду...", "Бригадир на связи...", "Машина выезжает..."];
-                let i = 0; setInterval(() => { i = (i + 1) % msgs.length; document.getElementById('waiting-messages').innerText = msgs[i]; }, 3000);
-            } catch(e) { tg.showAlert("Ошибка сервера!"); btn.disabled = false; }
-        }
+    ```javascript
+    // BAD: Redundant `fullName` state causes synchronization bugs.
+    const [fullName, setFullName] = useState(''); // REDUNDANT!
 
-        function workerLogin() {
-            if(document.getElementById('worker-code').value === '777') showPage('page-worker-cabinet');
-            else tg.showAlert("Код неверный!");
-        }
+    // GOOD: `fullName` is computed on render. Single source of truth.
+    const fullName = firstName + ' ' + lastName;
+    ```
 
-        function startAcceptProcess(addr, rate) {
-            showPage('page-warning');
-            document.getElementById('warning-details').innerHTML = `Объект: ${addr}<br>Ставка: ${rate}<br><br>Не приедешь — бан.`;
-            let t = 10;
-            const b = document.getElementById('btn-accept-final');
-            const it = setInterval(() => {
-                t--; document.getElementById('warning-timer').innerText = t;
-                if(t <= 0) { clearInterval(it); b.disabled = false; }
-            }, 1000);
-        }
+*   **2.2. AVOID CONTRADICTORY STATE:** Structure state to make impossible combinations unrepresentable.
 
-        function confirmAccept() {
-            showPage('page-contacts');
-            document.getElementById('final-contacts').innerHTML = `👤 Александр<br>📞 <a href="tel:+79991234567" style="color:var(--neon-blue);">+7 (999) 123-45-67</a>`;
-            let t = 180;
-            setInterval(() => {
-                t--; let m = Math.floor(t/60), s = t%60;
-                document.getElementById('contact-timer').innerText = `${m}:${s<10?'0'+s:s}`;
-            }, 1000);
-        }
-    </script>
-</body>
-</html>
+    ```javascript
+    // BAD: Allows impossible state like (isLoading: true, isError: true).
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    // GOOD: A single status variable prevents contradictions.
+    const [status, setStatus] = useState('idle'); // 'idle' | 'loading' | 'error'
+    ```
+
+*   **2.3. AVOID DATA DUPLICATION:** For selected items, store their `id`, not a duplicate of the entire object.
+
+    ```javascript
+    // BAD: `selectedUser` duplicates data and can become out of sync.
+    const [selectedUser, setSelectedUser] = useState(null);
+
+    // GOOD: Store only the ID. The selected object is derived.
+    const [selectedId, setSelectedId] = useState(null);
+    const selectedUser = users.find(u => u.id === selectedId);
+    ```
+
+*   **2.4. PREFER FLAT STATE:** Deep nesting is an anti-pattern. Normalize your data structure.
+
+### AXIOM 3: STATE FLOW AND CONTROL
+
+*   **3.1. Lifting State Up:** The standard pattern for sharing state. State resides in the closest common ancestor.
+
+*   **3.2. Resetting State with `key`:** This is **the preferred and idiomatic** way to completely reset a component's state. When a component's `key` prop changes, React will unmount the old instance and mount a new one with initial state.
+
+    ```javascript
+    // BAD: Manual and error-prone state reset in an Effect.
+    useEffect(() => { /* logic to reset form state... */ }, [userId]);
+
+    // GOOD: Idiomatic, clean, and robust.
+    <UserProfile key={userId} userId={userId} />
+    ```
+
+### AXIOM 4: `useEffect` IS FOR SYNCHRONIZATION ONLY
+
+`useEffect` is an escape hatch, not a tool for core logic.
+
+*   **4.1. Sole Purpose:** The **ONLY** legitimate use of `useEffect` is to **synchronize React state with an EXTERNAL system** (DOM, network, third-party libraries, timers).
+
+*   **4.2. FORBIDDEN `useEffect` Usage:**
+    *   **For Data Transformation:** Compute during render. `useMemo` is only for proven performance bottlenecks.
+    *   **For Handling User Events:** Logic belongs in event handlers.
+
+    ```javascript
+    // BAD: Side effect is tied to render, not the user action.
+    useEffect(() => { if (submitted) { post('/api/form'); } }, [submitted]);
+
+    // GOOD: Side effect is correctly tied to the event.
+    function handleSubmit() { post('/api/form'); }
+    ```
+
+*   **4.3. Strict `useEffect` Rules:**
+    *   **Dependency Array is Law:** It **MUST** contain all reactive values used inside. The `exhaustive-deps` ESLint rule **MUST NOT** be disabled.
+    *   **Cleanup is Mandatory:** If an Effect subscribes or starts a process, it **MUST** return a cleanup function.
+
+### AXIOM 5: REACT 19+ ARCHITECTURE (SERVER-FIRST, ACTION-ORIENTED)
+
+This is the modern paradigm. Prioritize these patterns.
+
+*   **5.1. Server Components are the Default.** Use `'use client'` only when state, effects, or browser APIs are required.
+
+*   **5.2. Server Actions (`'use server'`) for Mutations.** This is the primary mechanism for client-initiated data changes.
+
+*   **5.3. Modern Hooks for UI Feedback:** `useActionState` and `useOptimistic` are the standard for modern forms and interactions.
+
+    ```javascript
+    // BAD: The "old way" with manual state management.
+    'use client';
+    function OldForm() {
+      const [isPending, setIsPending] = useState(false);
+      const [error, setError] = useState(null);
+      async function handleSubmit() { /* manual logic... */ }
+    }
+
+    // GOOD: Clean, robust, and supports progressive enhancement via useActionState.
+    'use client';
+    import { useActionState } from 'react';
+    import { updateName } from './actions';
+
+    function NewForm() {
+      const [state, formAction, isPending] = useActionState(updateName, null);
+
+      return (
+        <form action={formAction}>
+          <input type="text" name="name" />
+          <button type="submit" disabled={isPending}>
+            {isPending ? 'Saving...' : 'Save'}
+          </button>
+          {state?.error && <p>{state.error}</p>}
+        </form>
+      );
+    }
+    ```
